@@ -1,0 +1,2 @@
+# SP-Blackjack
+Miniprojekt
