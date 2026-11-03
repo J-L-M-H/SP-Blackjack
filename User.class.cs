@@ -10,5 +10,7 @@ public class User
     public User(string username)
     {
         UserName = username;
+        Rounds = 0;
+        Balance = 100;
     }
 }
