@@ -9,6 +9,7 @@ public class Deck
         get { return cards.availableDeck.Count; }
     }
 
+// vid 15 eller mindre kort sätt card.availableDeck = deserialize cards json
 
     public void Shuffle()
     {
@@ -25,7 +26,6 @@ public class Deck
             cards.availableDeck[j] = temp;
         }
     }
-
 
     
 }
