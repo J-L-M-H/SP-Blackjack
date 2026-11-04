@@ -28,7 +28,39 @@ public class GameLogic
 
             return;
         }
-        User player = new User(name);
+         player = new User(name);
+         while (!close && player.Balance > 0)
+        {
+            PlayRound();
+
+            if (player.Balance <= 0)
+            {
+                Console.WriteLine(
+                    "\nYou dont have balance");
+                break;
+            }
+
+            Console.Write("\nPlay again? (y/n): ");
+
+            string answer = Console.ReadLine();
+
+            if (answer == "n")
+            {
+                close = true;
+            }
+            else if (answer == "y")
+            {
+               
+                close = false;
+            }
+            else
+            {
+                Console.WriteLine("invalid input");
+                close = true;
+            }
+        }
+
+        FinishGame();
     }
 
      // Delar ut två kort till spelaren och dealern.
@@ -39,6 +71,11 @@ public class GameLogic
 
         hand.UserDraw();
         hand.DealerDraw();
+    }
+
+     public void PlayRound()
+    {
+        return;
     }
 
     public void ShowRules()
