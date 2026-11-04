@@ -1,4 +1,3 @@
-﻿Console.WriteLine("Hello, World!");
 ﻿namespace ConsoleApp1;
 
 public class Program
