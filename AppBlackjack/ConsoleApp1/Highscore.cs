@@ -15,12 +15,6 @@ public class Highscore
         if (!File.Exists(FileName))
         {
             HighScoreList = new List<User>();
-            return;
-        }
-        else if(File.ReadAllText("highscores.json") == null)
-        {
-            HighScoreList = new List<User>();
-
             Console.WriteLine("The file is corrupted.");
         }
         //läses in Topplistan från JSON när programmet startar 
@@ -36,12 +30,11 @@ public class Highscore
     //Topplistan visar de fem bästa resultaten, sorterade med högst slutsaldo först
      public void AddHighscore(User user)
     {
-        User highestPlayers = new User(user.UserName){
-            Balance = user.Balance,
-            Rounds = user.Rounds
-        };
+        User result = new User(user.UserName);
+        result.Balance = user.Balance;
+        result.Rounds = user.Rounds;
 
-        HighScoreList.Add(highestPlayers);
+        HighScoreList.Add(result);
 
         HighScoreList = HighScoreList.OrderBy(u => u.Balance).Take(5).ToList();
 
