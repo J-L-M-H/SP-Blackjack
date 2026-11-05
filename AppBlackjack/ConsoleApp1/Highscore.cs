@@ -6,7 +6,7 @@ public class HighScore
 {
     public List<User> HighScoreList = new List<User>();
 
-    private const string FileName = "highscores.json";
+    public const string FileName = "highscores.json";
 
 
     public void ReadFromJson()
@@ -47,6 +47,9 @@ public class HighScore
         string json = JsonSerializer.Serialize(HighScoreList); //Serialize omvandlar string till json data
 
         File.WriteAllText(FileName, json);
+        string jsonFile = File.ReadAllText(FileName);
+        HighScoreList = JsonSerializer.Deserialize<List<User>>(jsonFile);
+
     }
 
     public void ShowHighscore()

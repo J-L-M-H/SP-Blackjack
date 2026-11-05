@@ -11,11 +11,11 @@ public class GameLogic
 
     private User player;
 
-    private Deck deck;
+    private Deck deck = new Deck();
 
     private Hand hand = new Hand();
 
-    private HighScore highscore;
+    private HighScore highscore = new HighScore();
 
 
     public void StartGame()
@@ -35,9 +35,9 @@ public class GameLogic
     }
     public void StartRound()
     {
-         while (!close && player.Balance > 0)
+        while (!close && player.Balance > 0)
         {
-            PlayRound();
+
 
             if (player.Balance <= 0)
             {
@@ -48,28 +48,9 @@ public class GameLogic
 
             Console.WriteLine($"""
                 Current balance: {player.Balance} kr
-                Play again? (y/n): ´
                 """);
-
-            string answer = Console.ReadLine();
-
-            if (answer == "n")
-            {
-                close = true;
-            }
-            else if (answer == "y")
-            {
-               
-                close = false;
-            }
-            else
-            {
-                Console.WriteLine("invalid input");
-                close = true;
-            }//need to move second half into own method to avoid code duplication
+            PlayRound();
         }
-
-        FinishGame();
     }
 
      // Delar ut två kort till spelaren och dealern.
@@ -85,6 +66,7 @@ public class GameLogic
 
      public void PlayRound()
     {
+
         Console.WriteLine($"How much do want to bet? Current balance: {player.Balance}");
         currentBet = int.Parse(Console.ReadLine());
         InitialDrawCard();
@@ -135,17 +117,19 @@ public class GameLogic
                     {
                         Console.WriteLine("You win! You get your bet back and win the same amount.");
                         player.Balance += currentBet;
+                        break;
                     }
                     else if (userTotal < dealerTotal)
                     {
                         Console.WriteLine("Dealer wins! You lose your bet.");
                         player.Balance -= currentBet;
+                        break;
                     }
                     else
                     {
                         Console.WriteLine("It's a tie! Your bet is returned.");
+                        break;
                     }
-                    break;
                 }
                 else
                 {
@@ -153,7 +137,32 @@ public class GameLogic
                 }
             }
         }
-        StartRound();
+        hand.ClearHand();
+        player.Rounds++;
+        Console.WriteLine("Enter 'y' to play again or 'n' to exit the game.");
+        string answer = Console.ReadLine();
+
+        if (answer == "n")
+        {
+            close = true;
+        }
+        else if (answer == "y")
+        {
+
+            close = false;
+        }
+        else
+        {
+            Console.WriteLine("invalid input");
+            close = true;
+        }//need to move second half into own method to avoid code duplicatio
+
+    if (close == true)
+    {
+        highscore.AddHighscore(player);
+        FinishGame();
+    }
+    StartRound();
     }
 
     public void ShowRules()
