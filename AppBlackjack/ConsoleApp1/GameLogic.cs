@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace ConsoleApp1;
 
 public class GameLogic
@@ -11,9 +13,9 @@ public class GameLogic
 
     private Deck deck;
 
-    private Hand hand;
+    private Hand hand = new Hand();
 
-    private Highscore highscore;
+    private HighScore highscore;
 
 
     public void StartGame()
@@ -83,6 +85,8 @@ public class GameLogic
 
      public void PlayRound()
     {
+        Console.WriteLine($"How much do want to bet? Current balance: {player.Balance}");
+        currentBet = int.Parse(Console.ReadLine());
         InitialDrawCard();
         if (hand.CalculateTotal(hand.drawnCardsDealer) == 21 || hand.CalculateTotal(hand.drawCardsUser) == 21)
         {

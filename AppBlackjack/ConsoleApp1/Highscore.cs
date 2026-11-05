@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace ConsoleApp1;
 
-public class Highscore
+public class HighScore
 {
     public List<User> HighScoreList = new List<User>();
 
