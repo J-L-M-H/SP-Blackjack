@@ -6,8 +6,13 @@ public class Program
     static void Main()
     {
 
-        GameLogic g = new GameLogic();
         HighScore h = new HighScore();
+
+        // Läser in tidigare resultat från JSON-filen
+        h.ReadFromJson();
+
+        // Skickar samma HighScore-objekt till GameLogic
+        GameLogic g = new GameLogic(h);
 
         bool run = true;
 
@@ -30,6 +35,7 @@ public class Program
                     break;
 
                 case 2:
+                    h.ReadFromJson();
                     h.ShowHighscore();
                     break;
 

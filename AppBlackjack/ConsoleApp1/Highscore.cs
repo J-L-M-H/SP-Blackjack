@@ -1,17 +1,21 @@
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text.Json;
 
 namespace ConsoleApp1;
 
 public class HighScore
 {
-    public List<User> HighScoreList = new List<User>();
+    // Property med get och set. Då kan System.Text.Json läsa och spara listan korrekt.
+    public List<User> HighScoreList { get; set; } = new List<User>();
 
     public const string FileName = "highscores.json";
 
-
     public void ReadFromJson()
     {
-        //Saknas filen eller är den trasig ska programmet ändå starta, med en tom topplista.
         if (!File.Exists(FileName))
         {
             HighScoreList = new List<User>();
@@ -24,11 +28,9 @@ public class HighScore
 
             HighScoreList = JsonSerializer.Deserialize<List<User>>(jsonFile); //Deserialize omvandlar Json data to Plain text (string)
         }
-
     }
 
-    //Topplistan visar de fem bästa resultaten, sorterade med högst slutsaldo först
-     public void AddHighscore(User user)
+    public void AddHighscore(User user)
     {
         User result = new User(user.UserName);
         result.Balance = user.Balance;
@@ -36,26 +38,28 @@ public class HighScore
 
         HighScoreList.Add(result);
 
-        HighScoreList = HighScoreList.OrderBy(u => u.Balance).Take(5).ToList();
+        HighScoreList = HighScoreList
+            .OrderByDescending(u => u.Balance)
+            .Take(5)
+            .ToList();
 
-        //Topplistan sparas i en JSON-fil 
         SaveToJson();
     }
 
     public void SaveToJson()
     {
-        string json = JsonSerializer.Serialize(HighScoreList); //Serialize omvandlar string till json data
+        string json = JsonSerializer.Serialize(
+            HighScoreList,
+            new JsonSerializerOptions { WriteIndented = true }
+        );
 
         File.WriteAllText(FileName, json);
-        string jsonFile = File.ReadAllText(FileName);
-        HighScoreList = JsonSerializer.Deserialize<List<User>>(jsonFile);
-
     }
 
     public void ShowHighscore()
     {
-        Console.WriteLine("\n Top list");
-        
+        Console.WriteLine("\nTop list");
+
         if (HighScoreList.Count == 0)
         {
             Console.WriteLine("No data");
@@ -66,10 +70,9 @@ public class HighScore
         {
             User user = HighScoreList[i];
 
-            Console.WriteLine($"{i + 1}. {user.UserName} " +   $"{user.Balance} kr " +   $"({user.Rounds} rounds)");
+            Console.WriteLine(
+                $"{i + 1}. {user.UserName} {user.Balance} kr ({user.Rounds} rounds)"
+            );
         }
-
     }
-        
-
 }

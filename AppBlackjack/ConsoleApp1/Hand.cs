@@ -5,16 +5,15 @@ public class Hand
     public List<string> drawCardsUser = new List<string>();
     public List<string> drawnCardsDealer = new List<string>();
 
-    Cards card = new Cards();
-    public void DealerDraw()
+    public void DealerDraw(Deck deck)
     {
-        string d = card.PickCard();
+        string d = deck.DrawCard();
         drawnCardsDealer.Add(d);
     }
     
-    public void UserDraw()
+    public void UserDraw(Deck deck)
     {
-       string c = card.PickCard();
+       string c = deck.DrawCard();
         drawCardsUser.Add(c);
     }
 

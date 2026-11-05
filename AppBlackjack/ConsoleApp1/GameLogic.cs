@@ -1,26 +1,33 @@
-using System.Runtime.InteropServices;
-
 namespace ConsoleApp1;
 
 public class GameLogic
 {
+    private HighScore highscore;
+
+    public GameLogic(HighScore score)
+    {
+        highscore = score;
+    }
     // Variabler
-    private bool close = false;
+    public bool close = false;
 
-    private int currentBet = 0;
+    public int currentBet = 0;
 
-    private User player;
+    public User player;
 
-    private Deck deck = new Deck();
+    public Deck deck = new Deck();
+    public Cards cards = new Cards();
 
-    private Hand hand = new Hand();
 
-    private HighScore highscore = new HighScore();
+    public Hand hand = new Hand();
+
 
 
     public void StartGame()
     {
         Console.Write("Your name: ");
+
+        close = false;
 
         string name = Console.ReadLine();
 
@@ -56,12 +63,12 @@ public class GameLogic
      // Delar ut två kort till spelaren och dealern.
     public void InitialDrawCard()
     {
-        hand.UserDraw();
-        hand.DealerDraw();
+        hand.UserDraw(deck);
+        hand.DealerDraw(deck);
 
-        hand.UserDraw();
+        hand.UserDraw(deck);
         hand.CardOnTable();
-        hand.DealerDraw();
+        hand.DealerDraw(deck);
     }
 
      public void PlayRound()
@@ -93,7 +100,11 @@ public class GameLogic
                 string choice = Console.ReadLine();
                 if (choice == "d")
                 {
-                    hand.UserDraw();
+                    hand.UserDraw(deck);
+                    if(cards.availableDeck.Count < 16)
+        {
+            deck.Shuffle();
+        }
                     Console.WriteLine($"You drew a {hand.drawCardsUser.Last()}");
                     if (hand.UserCalculateTotal(hand.drawCardsUser) > 21)
                     {
@@ -108,7 +119,11 @@ public class GameLogic
                     Console.WriteLine($"Dealer reveals a {hand.drawnCardsDealer.Last()}");
                     while (hand.DealerCalculateTotal(hand.drawnCardsDealer) < 17)
                     {
-                        hand.DealerDraw();
+                        hand.DealerDraw(deck);
+                        if(cards.availableDeck.Count < 16)
+        {
+            deck.Shuffle();
+        }
                         Console.WriteLine($"Dealer drew a {hand.drawnCardsDealer.Last()}");
                     }
                     int dealerTotal = hand.DealerCalculateTotal(hand.drawnCardsDealer);
@@ -159,9 +174,9 @@ public class GameLogic
 
     if (close == true)
     {
-        highscore.AddHighscore(player);
         FinishGame();
     }
+    Console.WriteLine($"{ deck.cardsavailable }");
     StartRound();
     }
 
@@ -251,8 +266,8 @@ public class GameLogic
         Console.WriteLine(
             $"Balance: {player.Balance} kr");
 
-        // Spara resultatet "private User player" i topplistan.
-        highscore.AddHighscore(player);
+        // Spara resultatet "public User player" i topplistan.
+    highscore.AddHighscore(player);
     }
 
 
