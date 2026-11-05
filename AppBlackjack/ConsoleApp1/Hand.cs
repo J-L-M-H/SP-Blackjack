@@ -42,7 +42,7 @@ public class Hand
             }
 
             //Ess som 1 när handen annars skulle gå över 21:
-            while (aces > 0)
+            while (aces > 0 && total > 21)
             {
                 total=-10;
                 aces--;

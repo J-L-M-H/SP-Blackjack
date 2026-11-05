@@ -28,7 +28,11 @@ public class GameLogic
 
             return;
         }
-         player = new User(name);
+        player = new User(name);
+        StartRound();
+    }
+    public void StartRound()
+    {
          while (!close && player.Balance > 0)
         {
             PlayRound();
@@ -36,11 +40,14 @@ public class GameLogic
             if (player.Balance <= 0)
             {
                 Console.WriteLine(
-                    "\nYou dont have balance");
+                    "You dont have enough balance");
                 break;
             }
 
-            Console.Write("\nPlay again? (y/n): ");
+            Console.WriteLine($"""
+                Current balance: {player.Balance} kr
+                Play again? (y/n): ´
+                """);
 
             string answer = Console.ReadLine();
 
@@ -57,7 +64,7 @@ public class GameLogic
             {
                 Console.WriteLine("invalid input");
                 close = true;
-            }
+            }//need to move second half into own method to avoid code duplication
         }
 
         FinishGame();
@@ -70,12 +77,79 @@ public class GameLogic
         hand.DealerDraw();
 
         hand.UserDraw();
+        hand.CardOnTable();
         hand.DealerDraw();
     }
 
      public void PlayRound()
     {
-        return;
+        InitialDrawCard();
+        if (hand.CalculateTotal(hand.drawnCardsDealer) == 21 || hand.CalculateTotal(hand.drawCardsUser) == 21)
+        {
+            hand.CardOnTable();
+            if (hand.isBlackJack(hand.drawnCardsDealer))
+            {
+                Console.WriteLine("Dealer has blackjack! You lose your bet.");
+                player.Balance -= currentBet;
+            }
+            else if (hand.isBlackJack(hand.drawCardsUser))
+            {
+                Console.WriteLine("\nYou have blackjack! You win 1.5 times your bet.");
+                player.Balance += (int)(currentBet * 1.5);
+            }
+        }
+        else
+        {
+            // Spelaren drar kort eller stannar.
+            while (true)
+            {
+                Console.WriteLine("Draw card or stay? (d/s): ");
+                string choice = Console.ReadLine();
+                if (choice == "d")
+                {
+                    hand.UserDraw();
+                    Console.WriteLine($"You drew a {hand.drawCardsUser.Last()}");
+                    if (hand.CalculateTotal(hand.drawCardsUser) > 21)
+                    {
+                        Console.WriteLine("\nYou went over 21! You lose your bet.");
+                        player.Balance -= currentBet;
+                        break;
+                    }
+                }
+                else if (choice == "s")
+                {
+                    // Dealern drar kort tills summan är minst 17.
+                    Console.WriteLine($"Dealer reveals a {hand.drawnCardsDealer.Last()}");
+                    while (hand.CalculateTotal(hand.drawnCardsDealer) < 17)
+                    {
+                        hand.DealerDraw();
+                        Console.WriteLine($"Dealer drew a {hand.drawnCardsDealer.Last()}");
+                    }
+                    int dealerTotal = hand.CalculateTotal(hand.drawnCardsDealer);
+                    int userTotal = hand.CalculateTotal(hand.drawCardsUser);
+                    if (dealerTotal > 21 || userTotal > dealerTotal)
+                    {
+                        Console.WriteLine("You win! You get your bet back and win the same amount.");
+                        player.Balance += currentBet;
+                    }
+                    else if (userTotal < dealerTotal)
+                    {
+                        Console.WriteLine("Dealer wins! You lose your bet.");
+                        player.Balance -= currentBet;
+                    }
+                    else
+                    {
+                        Console.WriteLine("It's a tie! Your bet is returned.");
+                    }
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please choose 'd' to draw or 's' to stay.");
+                }
+            }
+        }
+        StartRound();
     }
 
     public void ShowRules()
@@ -85,19 +159,43 @@ public class GameLogic
         Console.WriteLine("1. Spelaren lägger en insats.");
         Console.WriteLine();
 
-        Console.WriteLine("2. Spelaren och dealern får två kort var. Spelarens kort är uppvända. Dealern har ett uppvänt och ett dolt kort.");
+        Console.WriteLine("""
+            2. Spelaren och dealern får två kort var. Spelarens kort är uppvända.
+            Dealern har ett uppvänt och ett dolt kort.
+            """);
         Console.WriteLine();
 
-        Console.WriteLine("3. Blackjack betyder ess och ett kort värt 10 som de två första korten. Har någon blackjack avgörs rundan direkt. Har båda det blir det oavgjort. Om endast spelaren får blackjack vinner spelaren en bonusvinst motsvarande 1,5 gånger insatsen. Eventuella decimaler avrundas nedåt till närmaste hela belopp. Har bara dealern det förlorar spelaren sin insats.");
+        Console.WriteLine("""
+            3. Blackjack betyder ess och ett kort värt 10 som de två första korten. Har någon blackjack avgörs rundan direkt.
+             Har båda det blir det oavgjort. Om endast spelaren får blackjack vinner spelaren en bonusvinst motsvarande 1,5 gånger insatsen.
+             Eventuella decimaler avrundas nedåt till närmaste hela belopp. Har bara dealern det förlorar spelaren sin insats.
+            """);
+            
         Console.WriteLine();
 
-        Console.WriteLine("4. Annars väljer spelaren om hen vill dra ett kort eller stanna. Det upprepas tills spelaren stannar, når 21 eller går över 21. Går spelaren över 21 förlorar denne direkt.");
+        Console.WriteLine("""
+            4. Annars väljer spelaren om hen vill dra ett kort eller stanna.
+             Det upprepas tills spelaren stannar, när 21 eller går över 21. Går spelaren över 21 förlorar denne direkt.
+            """);
+            
         Console.WriteLine();
 
-        Console.WriteLine("5. Dealern vänder upp sitt dolda kort och drar kort tills summan är minst 17. Då stannar dealern. Går dealern över 21 vinner spelaren.");
+        Console.WriteLine("""
+            
+            5. Dealern vänder upp sitt dolda kort och drar kort tills summan är minst 17. Då stannar dealern.
+             Går dealern över 21 vinner spelaren.
+            
+            """);
+            
         Console.WriteLine();
 
-        Console.WriteLine("6. Handen närmast 21 vinner. Vid vinst får spelaren tillbaka sin insats samt en lika stor summa i vinst. Är det lika är det oavgjort och insatsen går tillbaka. Vinner dealern förlorar spelaren sin insats.");
+        Console.WriteLine("""
+            
+            6. Handen närmast 21 vinner. Vid vinst får spelaren tillbaka sin insats samt en lika stor summa i vinst.
+             Är det lika är det oavgjort och insatsen går tillbaka. Vinner dealern förlorar spelaren sin insats.
+            
+            """);
+            
         Console.WriteLine();
 
         Console.WriteLine("PENGAR OCH KORTLEK");
