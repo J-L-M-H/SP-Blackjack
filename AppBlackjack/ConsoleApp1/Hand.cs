@@ -17,43 +17,86 @@ public class Hand
        string c = card.PickCard();
         drawCardsUser.Add(c);
     }
-
+    int dealerTotal = 0;
+    int userTotal = 0;
+    int userAces = 0;
+    int dealerAces = 0;
     // Räknar värdet på korten.
-    public int CalculateTotal(List<string> hand)
+    public int DealerCalculateTotal(List<string> Dhand)
     {
-        int total = 0;
-        int aces = 0;
+     
 
-        foreach(string h in hand)
+        foreach(string h in Dhand)
         {
-            if(h == "Ace")
+            if (h == "Ace")
             {
-                total=+11;
-                aces++;
+                dealerTotal=+11;
+                dealerAces++;
             }
 
             else if(h== "Jack" || h=="Queen" || h=="King")
             {
-                total=+10;
+                dealerTotal=+10;
             }
             else
             {
-                total=+int.Parse(h);
+                dealerTotal=+int.Parse(h);
             }
 
             //Ess som 1 när handen annars skulle gå över 21:
-            while (aces > 0 && total > 21)
+            while (dealerAces > 0 && dealerTotal > 21)
             {
-                total=-10;
-                aces--;
+                dealerTotal=-10;
+                dealerAces--;
             }
         }
-       return total;
+       return dealerTotal;
+    }
+    public int UserCalculateTotal(List<string> hand)
+    {
+
+
+        foreach (string h in hand)
+        {
+            if (h == "Ace")
+            {
+                userTotal = +11;
+                userAces++;
+            }
+
+            else if (h == "Jack" || h == "Queen" || h == "King")
+            {
+                userTotal = +10;
+            }
+            else
+            {
+                userTotal = +int.Parse(h);
+            }
+
+            //Ess som 1 när handen annars skulle gå över 21:
+            while (userAces > 0 && userTotal > 21)
+            {
+                userTotal = -10;
+                userAces--;
+            }
+        }
+        return userTotal;
     }
 
-    public bool isBlackJack(List<string> hand)
+    public bool userIsBlackJack(List<string> hand)
     {   
-        if(CalculateTotal(hand) == 21)
+        if(UserCalculateTotal(hand) == 21)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public bool DealerIsBlackJack(List<string> hand)
+    {
+        if (DealerCalculateTotal(hand) == 21)
         {
             return true;
         }
@@ -83,5 +126,9 @@ public class Hand
     {
         drawCardsUser.Clear();
         drawnCardsDealer.Clear();
+        dealerTotal = 0;
+        userTotal = 0;
+        dealerAces = 0;
+        userAces = 0;
     }
 }

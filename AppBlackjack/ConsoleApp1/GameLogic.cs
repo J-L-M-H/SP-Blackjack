@@ -88,15 +88,15 @@ public class GameLogic
         Console.WriteLine($"How much do want to bet? Current balance: {player.Balance}");
         currentBet = int.Parse(Console.ReadLine());
         InitialDrawCard();
-        if (hand.CalculateTotal(hand.drawnCardsDealer) == 21 || hand.CalculateTotal(hand.drawCardsUser) == 21)
+        if (hand.DealerCalculateTotal(hand.drawnCardsDealer) == 21 || hand.UserCalculateTotal(hand.drawCardsUser) == 21)
         {
             hand.CardOnTable();
-            if (hand.isBlackJack(hand.drawnCardsDealer))
+            if (hand.DealerIsBlackJack(hand.drawnCardsDealer))
             {
                 Console.WriteLine("Dealer has blackjack! You lose your bet.");
                 player.Balance -= currentBet;
             }
-            else if (hand.isBlackJack(hand.drawCardsUser))
+            else if (hand.userIsBlackJack(hand.drawCardsUser))
             {
                 Console.WriteLine("\nYou have blackjack! You win 1.5 times your bet.");
                 player.Balance += (int)(currentBet * 1.5);
@@ -113,7 +113,7 @@ public class GameLogic
                 {
                     hand.UserDraw();
                     Console.WriteLine($"You drew a {hand.drawCardsUser.Last()}");
-                    if (hand.CalculateTotal(hand.drawCardsUser) > 21)
+                    if (hand.UserCalculateTotal(hand.drawCardsUser) > 21)
                     {
                         Console.WriteLine("\nYou went over 21! You lose your bet.");
                         player.Balance -= currentBet;
@@ -124,13 +124,13 @@ public class GameLogic
                 {
                     // Dealern drar kort tills summan är minst 17.
                     Console.WriteLine($"Dealer reveals a {hand.drawnCardsDealer.Last()}");
-                    while (hand.CalculateTotal(hand.drawnCardsDealer) < 17)
+                    while (hand.DealerCalculateTotal(hand.drawnCardsDealer) < 17)
                     {
                         hand.DealerDraw();
                         Console.WriteLine($"Dealer drew a {hand.drawnCardsDealer.Last()}");
                     }
-                    int dealerTotal = hand.CalculateTotal(hand.drawnCardsDealer);
-                    int userTotal = hand.CalculateTotal(hand.drawCardsUser);
+                    int dealerTotal = hand.DealerCalculateTotal(hand.drawnCardsDealer);
+                    int userTotal = hand.UserCalculateTotal(hand.drawCardsUser);
                     if (dealerTotal > 21 || userTotal > dealerTotal)
                     {
                         Console.WriteLine("You win! You get your bet back and win the same amount.");
